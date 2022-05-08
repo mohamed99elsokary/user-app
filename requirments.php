@@ -7,3 +7,7 @@
 <!-- update email -->
 
 verify email using (laravel traditional "way + my script")
+
+
+mail template
+mail service

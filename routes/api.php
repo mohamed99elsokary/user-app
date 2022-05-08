@@ -22,10 +22,4 @@ use Illuminate\Support\Facades\Route;
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('update', [AuthController::class, 'update']);
-Route::get('mail', function () {
-    $data = array('name' => "Virat Gandhi");
-    return Mail::send([], $data, function ($message) {
-        $message->to('mohamed99elsokary@gmail.com', 'Tutorials Point')->subject('Laravel Basic Testing Mail');
-        $message->from('joker171joker72@gmail.com', 'Tutorials Point');
-    });
-});
+Route::post('activate', [AuthController::class, 'activate']);
