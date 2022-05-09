@@ -23,3 +23,5 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('update', [AuthController::class, 'update']);
 Route::post('activate', [AuthController::class, 'activate']);
+Route::post('reset', [AuthController::class, 'reset_password']);
+Route::post('reset-confirm', [AuthController::class, 'reset_password_confirm']);

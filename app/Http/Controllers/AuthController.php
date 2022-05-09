@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ActivateRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\ResetPasswordConfirmRequest;
+use App\Http\Requests\ResetPasswordRequest;
 use App\Http\Requests\UpdateRequest;
 use App\Http\Resources\testResource;
 use App\Http\Resources\tokenResource;
@@ -33,7 +35,7 @@ class AuthController extends Controller
 
             Mail::to($email)->send(new MailCloudHostingProduct($random));
         } catch (\Throwable $th) {
-            dd($th);
+
             $response = ["message" => "email not sent"];
             return response($response, 422);
         }
@@ -92,6 +94,40 @@ class AuthController extends Controller
         } else {
             $response = ["message" => 'activaten code is incorrect'];
             return response($response, 400);
+        }
+    }
+    public function reset_password(ResetPasswordRequest $request)
+    {
+        $user = User::where('email', $request->email)->first();
+        if ($user) {
+
+            $random = Str::random(40);
+            $user->reset_password_code = $random;
+            $user->save();
+            try {
+
+                $email = "mohamed99elsokary@gmail.com";
+                Mail::to($email)->send(new MailCloudHostingProduct($random));
+            } catch (\Throwable $th) {
+
+                $response = ["message" => "email not sent"];
+                return response($response, 422);
+            }
+            return $this->dataResponse(['user' => $user]);
+        }
+    }
+    public function reset_password_confirm(ResetPasswordConfirmRequest $request)
+    {
+        $user = User::where('email', $request->email)->first();
+        if ($user and $user->reset_password_code == $request->reset_code) {
+            $user->password = bcrypt($request->password);
+            $user->reset_password_code = '';
+            $user->save();
+
+            return $this->dataResponse(['user' => $user]);
+        } else {
+
+            return $this->dataResponse(["message" => "email or reset password code is invalid"]);
         }
     }
 }
