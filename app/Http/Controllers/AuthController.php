@@ -12,9 +12,11 @@ use App\Http\Resources\testResource;
 use App\Http\Resources\tokenResource;
 use App\Mail\CloudHostingProduct as MailCloudHostingProduct;
 use App\Models\User;
+use App\Models\user_logins;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Stevebauman\Location\Facades\Location;
 
 class AuthController extends Controller
 {
@@ -44,11 +46,22 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
+        $clientIP = request()->ip();
+
         $user = User::where('email', $request->email)->first();
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
                 $is_activated = $user["is_activated"];
                 if ($is_activated == true) {
+                    $position = Location::get("102.46.119.77");
+                    // dd($position);
+                    $user_logins = user_logins::create([
+                        'ip' => $position->ip,
+                        'countryName' => $position->countryName,
+                        'countryCode' => $position->countryCode,
+                        'cityName' => $position->cityName,
+                        'user_id' => $user->id
+                    ]);
                     $token = $user->createToken('Laravel Password Grant Client')->accessToken;
                     $user = new testResource($user);
                     $token = new tokenResource($token);
