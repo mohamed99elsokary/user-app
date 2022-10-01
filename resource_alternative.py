@@ -7,9 +7,7 @@ object = {
 
 
 def new_resource(data, required):
-    new_object = {}
-    for i in required:
-        new_object[i] = data[i]
+    new_object = {i: data[i] for i in required}
     print(new_object)
 
 
